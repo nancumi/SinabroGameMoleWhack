@@ -58,24 +58,24 @@ export default function App() {
     setHoles(Array.from({ length: TOTAL_HOLES }, () => ({ up: false, hit: false })));
   }, []);
 
-  // 두더지 출현 스케줄러 (후반부 난이도 상승)
+  // 두더지 출현 스케줄러 (캐주얼하고 쾌적한 밸런스로 난이도 조정)
   const spawnMole = useCallback(() => {
-    // 현재 남은 시간에 따른 체류시간 및 쿨다운 가속
+    // 현재 남은 시간에 따른 체류시간 및 쿨다운
     const currentTime = timeLeft;
-    let stayDuration = 850; // 기본 체류 시간
-    let nextDelay = 300; // 다음 출현 대기 시간
+    let stayDuration = 1300; // 초반 기본 체류 시간 (충분히 보고 터치할 수 있는 여유)
+    let nextDelay = 380;     // 다음 출현 대기 시간
     let countToSpawn = 1;
 
     if (currentTime <= 10) {
-      // 마지막 10초: 초고속 스퍼트
-      stayDuration = 480;
-      nextDelay = 180;
-      // 30% 확률로 2마리 동시 출현
-      if (Math.random() < 0.35) countToSpawn = 2;
+      // 마지막 10초: 긴장감 있는 스퍼트 (충분히 타격 가능한 850ms)
+      stayDuration = 850;
+      nextDelay = 260;
+      // 25% 확률로 2마리 동시 출현
+      if (Math.random() < 0.25) countToSpawn = 2;
     } else if (currentTime <= 20) {
       // 중반부 20~11초
-      stayDuration = 650;
-      nextDelay = 240;
+      stayDuration = 1050;
+      nextDelay = 320;
     }
 
     setHoles((prev) => {
@@ -243,16 +243,18 @@ export default function App() {
       {/* 중앙 집중 메인 컨테이너 */}
       <div className="relative z-10 w-full max-w-[420px] mx-auto flex flex-col items-center">
         
-        {/* 상단 컨트롤러 (음소거 / 기록 초기화) - 군더더기 없이 심플하게 배치 */}
-        <div className="w-full flex items-center justify-between px-2 mb-3">
-          <div className="flex items-center gap-1.5 text-gray-400">
-            <Trophy className="w-3.5 h-3.5 text-amber-400" />
-            <span className="text-[11px] font-medium tracking-wide">BEST {bestScore}</span>
+        {/* 상단 컨트롤러 (BEST 점수 & 음소거 버튼) - 모바일 가독성 및 터치 편의성 대폭 확대 */}
+        <div className="w-full flex items-center justify-between px-1 mb-3.5">
+          <div className="flex items-center gap-2 text-gray-300">
+            <Trophy className="w-5 h-5 sm:w-6 sm:h-6 text-amber-400 drop-shadow-sm flex-shrink-0" />
+            <span className="text-sm sm:text-base font-bold tracking-wide text-gray-100">
+              BEST <span className="text-amber-400 font-mono font-black">{bestScore}</span>
+            </span>
             {bestScore > 0 && gameState === 'idle' && (
               <button
                 type="button"
                 onClick={handleResetRecord}
-                className="ml-1 text-[11px] text-gray-500 hover:text-gray-300 underline underline-offset-2 transition-colors"
+                className="ml-1.5 px-2 py-0.5 rounded text-[11px] font-medium text-gray-400 hover:text-gray-200 bg-gray-800/80 hover:bg-gray-700 transition-colors"
                 title="기록 초기화"
               >
                 초기화
@@ -263,9 +265,13 @@ export default function App() {
             type="button"
             onClick={toggleSound}
             aria-label={isMuted ? '소리 켜기' : '소리 끄기'}
-            className="p-1.5 rounded-lg bg-gray-800/60 hover:bg-gray-800 text-gray-400 hover:text-gray-200 transition-colors"
+            className="p-2 sm:p-2.5 rounded-xl bg-gray-800/80 hover:bg-gray-700 active:scale-95 text-gray-300 hover:text-white transition-all shadow-md flex items-center justify-center cursor-pointer"
           >
-            {isMuted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+            {isMuted ? (
+              <VolumeX className="w-5 h-5 sm:w-6 sm:h-6 text-rose-400" />
+            ) : (
+              <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+            )}
           </button>
         </div>
 
